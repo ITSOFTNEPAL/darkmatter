@@ -16,7 +16,7 @@ jobs:
       - name: Set Up Git User
         run: |
           git config --global user.name "Your Name"
-          git config --global user.email "yop@yop.gop"
+          git config --global user.email "your.email@example.com"
 
       - name: Install Dependencies
         run: |
@@ -28,7 +28,6 @@ jobs:
             syslinux-utils gettext genisoimage bc xorriso libncurses-dev xmlstarlet \
             imagemagick lib32readline-dev liblz4-tool libsdl1.2-dev libxml2 lzop pngcrush \
             rsync schedtool python3-mako libelf-dev aapt zstd rdfind nasm rustc bindgen
-          sudo apt-get install -y gcc-10 g++-10  # Optional for Kernel builds
 
       - name: Install Repo
         run: |
@@ -53,7 +52,7 @@ jobs:
           make iso_img -j$(nproc)
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: BlissRoms-x86-ISO
           path: ~/blissrom/out/target/product/x86/*.iso
