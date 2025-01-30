@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set Up Git User
         run: |
@@ -53,7 +53,7 @@ jobs:
           make iso_img -j$(nproc)
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: BlissRoms-x86-ISO
           path: ~/blissrom/out/target/product/x86/*.iso
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download ISO Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: BlissRoms-x86-ISO
           path: iso_output/
