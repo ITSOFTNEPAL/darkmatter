@@ -1,29 +1,109 @@
-name: Install repo command
+name: Build Android 7 x86 ISO
 
-on: [push]
+on:
+  push:
+    tags:
+      - '*'  # Trigger on tag push
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
 
-      - name: Install repo command
+      - name: Set Up Git User
         run: |
-          # Create the bin directory
+          git config --global user.name "Your Name"
+          git config --global user.email "your.email@example.com"
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git-core \
+            git-lfs \
+            gnupg \
+            flex \
+            bison \
+            maven \
+            gperf \
+            build-essential \
+            zip \
+            curl \
+            zlib1g-dev \
+            gcc-multilib \
+            g++-multilib \
+            libc6-dev-i386 \
+            lib32ncurses-dev \
+            x11proto-core-dev \
+            libx11-dev \
+            lib32z-dev \
+            ccache \
+            libgl1-mesa-dev \
+            libxml2-utils \
+            xsltproc \
+            unzip \
+            squashfs-tools \
+            python3-mako \
+            libssl-dev \
+            ninja-build \
+            lunzip \
+            syslinux \
+            syslinux-utils \
+            gettext \
+            genisoimage \
+            bc \
+            xorriso \
+            libncurses-dev \
+            xmlstarlet \
+            imagemagick \
+            lib32readline-dev \
+            liblz4-tool \
+            libsdl1.2-dev \
+            libxml2 \
+            lzop \
+            pngcrush \
+            rsync \
+            schedtool \
+            python3-mako \
+            libelf-dev \
+            aapt \
+            zstd \
+            rdfind \
+            nasm \
+            rustc \
+            bindgen
+
+      - name: Install Repo
+        run: |
           mkdir -p ~/bin
-          
-          # Download repo from Google's storage
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
           chmod a+x ~/bin/repo
-
-          # Add the repo command to the PATH
           echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
           source ~/.bashrc
 
-      - name: Verify repo installation
+      - name: Initialize Repo and Sync Source Code
         run: |
-          repo --version  # Verify that repo is correctly installed
+          mkdir -p ~/android-x86
+          cd ~/android-x86
+          repo init -u https://git.osdn.net/gitroot/android-x86/manifest -b nougat-x86
+          repo sync -j$(nproc)
 
-      # Continue with your other build steps here (sync repo, build, etc.)
+      - name: Set Up Build Environment
+        run: |
+          cd ~/android-x86
+          source build/envsetup.sh
+          lunch android_x86-userdebug
+
+      - name: Build ISO
+        run: |
+          cd ~/android-x86
+          make iso_img -j$(nproc)
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-x86-iso
+          path: ~/android-x86/out/target/product/x86/*.iso
