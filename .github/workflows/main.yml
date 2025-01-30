@@ -14,10 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Compile BlissRoms-x86
     env:
-      # Set environment variables as needed
-      # BLISS_BUILD_VARIANT: vanilla
-      # BLISS_SPECIAL_VARIANT: -jupiter
-      # NO_KERNEL_CROSS_COMPILE: true
+      BLISS_BUILD_VARIANT: vanilla
+      BLISS_SPECIAL_VARIANT: -jupiter
+      NO_KERNEL_CROSS_COMPILE: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
