@@ -1,80 +1,21 @@
-name: Build and Release BlissRoms-x86
+name: Install repo command
 
-on:
-  push:
-    tags:
-      - '*' # Runs when a tag is pushed (e.g., v1.0)
-  workflow_dispatch: # Allows manual trigger
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Set Up Git User
-        run: |
-          git config --global user.name "Your Name"
-          git config --global user.email "your.email@example.com"
-
-      - name: Install Dependencies
+      - name: Install repo package
         run: |
           sudo apt-get update
-          sudo apt-get install -y git-core git-lfs gnupg flex bison maven gperf build-essential \
-            zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses-dev \
-            x11proto-core-dev libx11-dev lib32z-dev ccache libgl1-mesa-dev libxml2-utils \
-            xsltproc unzip squashfs-tools python3-mako libssl-dev ninja-build lunzip syslinux \
-            syslinux-utils gettext genisoimage bc xorriso libncurses-dev xmlstarlet \
-            imagemagick lib32readline-dev liblz4-tool libsdl1.2-dev libxml2 lzop pngcrush \
-            rsync schedtool python3-mako libelf-dev aapt zstd rdfind nasm rustc bindgen
+          sudo apt-get install -y git-repo  # Install the repo package
 
-      - name: Install Repo
+      - name: Verify repo installation
         run: |
-          mkdir -p ~/bin
-          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-          chmod a+x ~/bin/repo
-          echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
-          source ~/.bashrc
+          repo --version  # Verify the repo command works
 
-      - name: Initialize Repo and Sync Source Code
-        run: |
-          mkdir -p ~/blissrom
-          cd ~/blissrom
-          repo init -u https://github.com/BlissRoms-x86/manifest.git -b main
-          repo sync -j$(nproc)
-
-      - name: Build BlissRoms-x86
-        run: |
-          cd ~/blissrom
-          source build/envsetup.sh
-          lunch bliss_x86-userdebug
-          make iso_img -j$(nproc)
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: BlissRoms-x86-ISO
-          path: ~/blissrom/out/target/product/x86/*.iso
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download ISO Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: BlissRoms-x86-ISO
-          path: iso_output/
-
-      - name: Publish Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: iso_output/*.iso
-          name: BlissRoms-x86 ${{ github.ref_name }}
-          tag_name: ${{ github.ref }}
-          body: "BlissRoms-x86 Build - Version ${{ github.ref_name }}"
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Add other steps here (like syncing the repo, building, etc.)
