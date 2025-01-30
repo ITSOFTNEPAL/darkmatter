@@ -15,6 +15,6 @@ jobs:
         uses: actions/checkout@v4  # Updated to latest version
 
       - name: Build Bigdroid
-        uses: bigdroid/action-build@v1  # Use a stable version instead of HEAD
+        uses: bigdroid/action-build@HEAD  # Use a stable version instead of HEAD
         env:
           API_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure the secret is set in repo settings
