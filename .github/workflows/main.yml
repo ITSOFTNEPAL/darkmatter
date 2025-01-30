@@ -7,15 +7,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Install repo package
+      - name: Install repo command
         run: |
-          sudo apt-get update
-          sudo apt-get install -y git-repo  # Install the repo package
+          # Download repo from Google's storage
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          chmod a+x ~/bin/repo
+
+          # Add the repo command to the PATH
+          echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
+          source ~/.bashrc
 
       - name: Verify repo installation
         run: |
-          repo --version  # Verify the repo command works
+          repo --version  # Verify that repo is correctly installed
 
-      # Add other steps here (like syncing the repo, building, etc.)
+      # Continue with your other build steps here (sync repo, build, etc.)
