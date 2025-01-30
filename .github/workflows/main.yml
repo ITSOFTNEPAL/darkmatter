@@ -3,18 +3,18 @@ name: Build Bigdroid Project
 on:
   push:
     tags:
-      - '*'
-  #workflow_dispatch:
+      - '*'  # Triggers workflow on any tag push
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   publish_release:
     runs-on: ubuntu-latest
     name: Building Bigdroid project
     steps:
-      - uses: actions/checkout@v2
-      
-      - id: bigdroid-build
-#         uses: lhotari/action-upterm@v1
-        uses: bigdroid/action-build@HEAD
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # Updated to latest version
+
+      - name: Build Bigdroid
+        uses: bigdroid/action-build@v1  # Use a stable version instead of HEAD
         env:
-            API_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          API_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Ensure the secret is set in repo settings
