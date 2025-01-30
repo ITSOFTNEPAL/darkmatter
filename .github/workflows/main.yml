@@ -13,10 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Compile BlissRoms-x86
-    env:
-      BLISS_BUILD_VARIANT: vanilla
-      BLISS_SPECIAL_VARIANT: -jupiter
-      NO_KERNEL_CROSS_COMPILE: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -37,20 +33,4 @@ jobs:
         run: |
           git config --global user.name "Your Name"
           git config --global user.email "your.email@example.com"
-          repo init -u https://github.com/BlissRoms-x86/manifest.git -b arcadia-x86
-          repo sync --no-tags --no-clone-bundle
-
-      - name: Set Up Build Environment
-        run: |
-          source build/envsetup.sh
-          lunch bliss_x86_64-userdebug
-
-      - name: Build ISO Image
-        run: |
-          mka iso_img
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: BlissRoms-x86-ISO
-          path: out/target/product/x86_64/*.iso
+          repo init -u https://github.com/BlissRoms-x86/manifest.git -b main
